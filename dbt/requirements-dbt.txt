@@ -1,0 +1,4 @@
+# dbt/requirements-dbt.txt
+# Pinned to a known-good pair. Bump together, never independently.
+dbt-core==1.8.7
+dbt-postgres==1.8.2

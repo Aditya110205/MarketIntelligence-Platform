@@ -1,0 +1,50 @@
+# dbt/models/staging/_sources.yml
+#
+# Declares raw inputs that live in the warehouse but are NOT built by dbt.
+# Today: one source (silver). Later: bronze, external API snapshots, etc.
+#
+# Referenced in SQL as:  {{ source('silver', 'sp500_clean') }}
+# Compiles to:           public.silver_sp500_clean
+#
+# Freshness is intentionally NOT configured yet — the source has no
+# ingestion-timestamp column (only the trading `date`), and using `date`
+# as loaded_at would be semantically wrong. Add a `loaded_at` column to
+# Silver in a later phase, then wire freshness here. Logged as future work.
+
+version: 2
+
+sources:
+  - name: silver
+    description: >
+      Cleaned S&P 500 daily prices produced by the PySpark Silver layer
+      (Phase 3) and landed in Postgres by scripts/load_file.py (Phase 4, Step 1).
+      One row per (ticker, date). Read-only from dbt's perspective.
+    schema: public
+    tables:
+      - name: sp500_clean
+        identifier: silver_sp500_clean
+        description: >
+          Cleaned daily OHLCV for 27 tickers, 2013-01-01 to 2015-09-27.
+          947 rows after Phase 3 dedupe + null handling. 7 columns.
+        columns:
+          - name: date
+            description: Trading date.
+            data_type: date
+          - name: open
+            description: Opening price (USD). Nullable — 12 nulls post-clean.
+            data_type: double precision
+          - name: high
+            description: Intraday high (USD). Nullable — 5 nulls post-clean.
+            data_type: double precision
+          - name: low
+            description: Intraday low (USD). Nullable — 8 nulls post-clean.
+            data_type: double precision
+          - name: close
+            description: Closing price (USD). Nullable — 9 nulls post-clean.
+            data_type: double precision
+          - name: volume
+            description: Shares traded. Nullable — 36 nulls post-clean.
+            data_type: bigint
+          - name: ticker
+            description: Stock ticker symbol. 27 distinct values.
+            data_type: text

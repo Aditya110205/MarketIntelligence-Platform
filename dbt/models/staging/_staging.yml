@@ -1,0 +1,58 @@
+# dbt/models/staging/_staging.yml
+#
+# Tests for stg_sp500__prices. Each test is a SELECT that returns rows
+# on failure. 0 rows = pass, >=1 rows = fail.
+#
+# Coverage:
+#   - not_null on the natural key (trade_date, ticker)
+#   - accepted_values on ticker: the 10 canonical tickers (Phase 4 audit)
+#   - composite uniqueness + null-drift + canonical-set are singular tests
+#     in dbt/tests/.
+#
+# Price and volume nulls are tolerated today (measured post-clean counts:
+# open=12, high=5, low=8, close=9, volume=36). The drift test fails if
+# these counts grow — that's the regression signal, not the nulls themselves.
+
+version: 2
+
+models:
+  - name: stg_sp500__prices
+    description: >
+      Typed, renamed view over silver.sp500_clean. Ticker normalized to
+      canonical form: upper(trim(trailing '.' from ticker)). One row per
+      (ticker, trade_date). 10 canonical tickers, 2013-01-01 to 2015-09-27.
+    columns:
+      - name: trade_date
+        description: Trading date. Part of natural key. Never null.
+        data_tests:
+          - not_null
+
+      - name: ticker
+        description: >
+          Canonical ticker, uppercased and stripped of trailing-dot markers.
+          10 distinct values (measured from silver, Phase 4).
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - AAPL
+                - AMZN
+                - FB
+                - GOOGL
+                - JNJ
+                - JPM
+                - MSFT
+                - NVDA
+                - PG
+                - V
+
+      - name: open_price
+        description: Opening price (USD). Nullable today.
+      - name: high_price
+        description: Intraday high (USD). Nullable today.
+      - name: low_price
+        description: Intraday low (USD). Nullable today.
+      - name: close_price
+        description: Closing price (USD). Nullable today.
+      - name: volume
+        description: Shares traded. Nullable today.

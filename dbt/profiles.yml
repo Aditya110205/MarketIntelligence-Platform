@@ -1,0 +1,23 @@
+# dbt/profiles.yml
+#
+# NO SECRETS HERE. Every value is read from environment variables.
+# Local:      your shell must have the .env vars exported (see scripts/load_dotenv.ps1)
+# Airflow:    the DAG will pass these via env or env_file.
+#
+# Explicit --profiles-dir dbt is used everywhere so dbt reads this file,
+# not ~/.dbt/profiles.yml.
+
+market_intel:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('POSTGRES_HOST') }}"
+      port: "{{ env_var('POSTGRES_PORT') | int }}"
+      user: "{{ env_var('POSTGRES_USER') }}"
+      password: "{{ env_var('POSTGRES_PASSWORD') }}"
+      dbname: "{{ env_var('POSTGRES_DB') }}"
+      schema: public          # default landing schema for non-staging models
+      threads: 4
+      keepalives_idle: 0
+      connect_timeout: 10

@@ -1,0 +1,4 @@
+# dbt build artifacts — never commit
+target/
+dbt_packages/
+logs/

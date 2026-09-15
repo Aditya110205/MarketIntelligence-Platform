@@ -1,0 +1,33 @@
+# dbt/dbt_project.yml
+#
+# Project-level config. Lives in the repo, committed, no secrets.
+# Credentials live in ~/.dbt/profiles.yml (outside the repo).
+
+name: 'market_intel'
+version: '1.0.0'
+config-version: 2
+
+# Which profile (from ~/.dbt/profiles.yml) to use
+profile: 'market_intel'
+
+# Directory layout (defaults, made explicit for clarity)
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# Default materialization for models.
+# Staging = views (cheap, always fresh, thin rename/cast layer).
+# Phase 5 will override marts to `table` at the subfolder level.
+models:
+  market_intel:
+    staging:
+      +materialized: view
+      +schema: staging

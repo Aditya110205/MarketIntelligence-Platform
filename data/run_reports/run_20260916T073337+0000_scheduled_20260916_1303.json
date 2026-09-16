@@ -1,0 +1,70 @@
+{
+  "label": "scheduled_20260916_1303",
+  "started_at": "2026-09-16T07:33:37+00:00",
+  "ended_at": "2026-09-16T07:34:16+00:00",
+  "total_duration_sec": 38.481,
+  "overall_success": true,
+  "python_version": "3.13.5",
+  "platform": "win32",
+  "cwd": "C:\\Users\\Aditya\\OneDrive\\Desktop\\Practice\\MarketIntelligence",
+  "stages": [
+    {
+      "name": "bronze",
+      "description": "Ingest raw CSV -> data/bronze/",
+      "cmd": [
+        "python",
+        "scripts/run_bronze.py"
+      ],
+      "enabled": false,
+      "started_at": null,
+      "ended_at": null,
+      "duration_sec": null,
+      "exit_code": null,
+      "success": true,
+      "stdout_tail": "",
+      "stderr_tail": "",
+      "error": "skipped (disabled)"
+    },
+    {
+      "name": "silver",
+      "description": "PySpark clean -> data/silver/sp500_clean.parquet",
+      "cmd": [
+        "C:\\Users\\Aditya\\OneDrive\\Desktop\\Practice\\MarketIntelligence\\venv\\Scripts\\python.exe",
+        "scripts/run_silver.py"
+      ],
+      "enabled": true,
+      "started_at": "2026-09-16T07:33:37+00:00",
+      "ended_at": "2026-09-16T07:34:01+00:00",
+      "duration_sec": 23.634,
+      "exit_code": 0,
+      "success": true,
+      "stdout_tail": "\n=== SILVER SUMMARY ===\nrow_count: 947\nnull_counts: {'date': 0, 'open': 12, 'high': 5, 'low': 8, 'close': 9, 'volume': 36, 'ticker': 0}\ndistinct_tickers: 27\nmin_date: 2013-01-01\nmax_date: 2015-09-27\nsilver_dir: C:\\Users\\Aditya\\OneDrive\\Desktop\\Practice\\MarketIntelligence\\data\\silver\\sp500_clean.parquet\n\n=== RUNTIME: 22.8 s ===\nSUCCESS: The process with PID 28348 (child process of PID 27520) has been terminated.\nSUCCESS: The process with PID 27520 (child process of PID 28840) has been terminated.\nSUCCESS: The process with PID 28840 (child process of PID 28752) has been terminated.",
+      "stderr_tail": "26/09/16 13:03:58 WARN MemoryManager: Total allocation exceeds 95.00% (2,040,109,440 bytes) of heap memory\nScaling row group sizes to 84.44% for 18 writers\n26/09/16 13:03:58 WARN MemoryManager: Total allocation exceeds 95.00% (2,040,109,440 bytes) of heap memory\nScaling row group sizes to 89.41% for 17 writers\n26/09/16 13:03:58 WARN MemoryManager: Total allocation exceeds 95.00% (2,040,109,440 bytes) of heap memory\nScaling row group sizes to 95.00% for 16 writers\n\n[Stage 29:====================>                                 (75 + 28) / 200]\n\n[Stage 29:=========================>                            (95 + 28) / 200]\n\n[Stage 29:==============================>                      (115 + 28) / 200]\n26/09/16 13:03:58 WARN MemoryManager: Total allocation exceeds 95.00% (2,040,109,440 bytes) of heap memory\nScaling row group sizes to 95.00% for 16 writers\n26/09/16 13:03:58 WARN MemoryManager: Total allocation exceeds 95.00% (2,040,109,440 bytes) of heap memory\nScaling row group sizes to 95.00% for 16 writers\n\n[Stage 29:==================================>                  (132 + 28) / 200]\n\n[Stage 29:=====================================>               (143 + 28) / 200]\n26/09/16 13:03:59 WARN MemoryManager: Total allocation exceeds 95.00% (2,040,109,440 bytes) of heap memory\nScaling row group sizes to 95.00% for 16 writers\n26/09/16 13:03:59 WARN MemoryManager: Total allocation exceeds 95.00% (2,040,109,440 bytes) of heap memory\nScaling row group sizes to 89.41% for 17 writers\n26/09/16 13:03:59 WARN MemoryManager: Total allocation exceeds 95.00% (2,040,109,440 bytes) of heap memory\nScaling row group sizes to 84.44% for 18 writers\n26/09/16 13:03:59 WARN MemoryManager: Total allocation exceeds 95.00% (2,040,109,440 bytes) of heap memory\nScaling row group sizes to 89.41% for 17 writers\n26/09/16 13:03:59 WARN MemoryManager: Total allocation exceeds 95.00% (2,040,109,440 bytes) of heap memory\nScaling row group sizes to 84.44% for 18 writers\n26/09/16 13:03:59 WARN MemoryManager: Total allocation exceeds 95.00% (2,040,109,440 bytes) of heap memory\nScaling row group sizes to 89.41% for 17 writers\n26/09/16 13:03:59 WARN MemoryManager: Total allocation exceeds 95.00% (2,040,109,440 bytes) of heap memory\nScaling row group sizes to 95.00% for 16 writers\n\n[Stage 29:=============================================>       (173 + 27) / 200]\n\n[Stage 29:=================================================>   (188 + 12) / 200]\n\n                                                                                ",
+      "error": null
+    },
+    {
+      "name": "dbt",
+      "description": "dbt build (run + test) via scripts/dbt.ps1",
+      "cmd": [
+        "powershell.exe",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/dbt.ps1",
+        "build",
+        "--profiles-dir",
+        "."
+      ],
+      "enabled": true,
+      "started_at": "2026-09-16T07:34:01+00:00",
+      "ended_at": "2026-09-16T07:34:16+00:00",
+      "duration_sec": 14.847,
+      "exit_code": 0,
+      "success": true,
+      "stdout_tail": "07:34:11  8 of 24 START sql table model public_intermediate.int_sp500__prices_enriched ... [RUN]\n07:34:11  8 of 24 OK created sql table model public_intermediate.int_sp500__prices_enriched  [SELECT 947 in 0.12s]\n07:34:11  9 of 24 START test int_sp500__prices_enriched_no_null_close .................... [RUN]\n07:34:11  9 of 24 PASS int_sp500__prices_enriched_no_null_close .......................... [PASS in 0.06s]\n07:34:11  11 of 24 START sql table model public_marts.fct_daily_prices ................... [RUN]\n07:34:11  10 of 24 START sql table model public_marts.fct_daily_metrics .................. [RUN]\n07:34:11  10 of 24 OK created sql table model public_marts.fct_daily_metrics ............. [SELECT 947 in 0.12s]\n07:34:11  11 of 24 OK created sql table model public_marts.fct_daily_prices .............. [SELECT 947 in 0.12s]\n07:34:11  12 of 24 START test fct_daily_metrics_volatility_null_count .................... [RUN]\n07:34:11  14 of 24 START test not_null_fct_daily_metrics_drawdown ........................ [RUN]\n07:34:11  13 of 24 START test not_null_fct_daily_metrics_close_price_filled .............. [RUN]\n07:34:11  15 of 24 START test not_null_fct_daily_metrics_ma30 ............................ [RUN]\n07:34:11  14 of 24 PASS not_null_fct_daily_metrics_drawdown .............................. [PASS in 0.07s]\n07:34:11  16 of 24 START test not_null_fct_daily_metrics_ma7 ............................. [RUN]\n07:34:11  12 of 24 PASS fct_daily_metrics_volatility_null_count .......................... [PASS in 0.08s]\n07:34:11  17 of 24 START test not_null_fct_daily_metrics_ticker .......................... [RUN]\n07:34:11  15 of 24 PASS not_null_fct_daily_metrics_ma30 .................................. [PASS in 0.09s]\n07:34:11  18 of 24 START test not_null_fct_daily_metrics_trade_date ...................... [RUN]\n07:34:11  13 of 24 PASS not_null_fct_daily_metrics_close_price_filled .................... [PASS in 0.09s]\n07:34:11  19 of 24 START test accepted_values_fct_daily_prices_ticker__AAPL__AMZN__FB__GOOGL__JNJ__JPM__MSFT__NVDA__PG__V  [RUN]\n07:34:11  16 of 24 PASS not_null_fct_daily_metrics_ma7 ................................... [PASS in 0.08s]\n07:34:11  20 of 24 START test fct_daily_prices_unique_key ................................ [RUN]\n07:34:11  17 of 24 PASS not_null_fct_daily_metrics_ticker ................................ [PASS in 0.08s]\n07:34:11  21 of 24 START test not_null_fct_daily_prices_close_price_filled ............... [RUN]\n07:34:11  18 of 24 PASS not_null_fct_daily_metrics_trade_date ............................ [PASS in 0.08s]\n07:34:11  22 of 24 START test not_null_fct_daily_prices_close_price_was_filled ........... [RUN]\n07:34:11  19 of 24 PASS accepted_values_fct_daily_prices_ticker__AAPL__AMZN__FB__GOOGL__JNJ__JPM__MSFT__NVDA__PG__V  [PASS in 0.08s]\n07:34:11  23 of 24 START test not_null_fct_daily_prices_ticker ........................... [RUN]\n07:34:11  20 of 24 PASS fct_daily_prices_unique_key ...................................... [PASS in 0.05s]\n07:34:11  24 of 24 START test not_null_fct_daily_prices_trade_date ....................... [RUN]\n07:34:11  21 of 24 PASS not_null_fct_daily_prices_close_price_filled ..................... [PASS in 0.06s]\n07:34:11  22 of 24 PASS not_null_fct_daily_prices_close_price_was_filled ................. [PASS in 0.06s]\n07:34:11  23 of 24 PASS not_null_fct_daily_prices_ticker ................................. [PASS in 0.05s]\n07:34:11  24 of 24 PASS not_null_fct_daily_prices_trade_date ............................. [PASS in 0.05s]\n07:34:11  \n07:34:11  Finished running 1 view model, 20 data tests, 3 table models in 0 hours 0 minutes and 3.94 seconds (3.94s).\n07:34:11  \n07:34:11  Completed successfully\n07:34:11  \n07:34:11  Done. PASS=24 WARN=0 ERROR=0 SKIP=0 TOTAL=24",
+      "stderr_tail": "",
+      "error": null
+    }
+  ]
+}

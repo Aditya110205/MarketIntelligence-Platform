@@ -1,0 +1,70 @@
+{
+  "label": "smoke2",
+  "started_at": "2026-09-16T07:30:53+00:00",
+  "ended_at": "2026-09-16T07:30:53+00:00",
+  "total_duration_sec": 0.0,
+  "overall_success": true,
+  "python_version": "3.13.5",
+  "platform": "win32",
+  "cwd": "C:\\Users\\Aditya\\OneDrive\\Desktop\\Practice\\MarketIntelligence",
+  "stages": [
+    {
+      "name": "bronze",
+      "description": "Ingest raw CSV -> data/bronze/",
+      "cmd": [
+        "python",
+        "scripts/run_bronze.py"
+      ],
+      "enabled": false,
+      "started_at": null,
+      "ended_at": null,
+      "duration_sec": null,
+      "exit_code": null,
+      "success": true,
+      "stdout_tail": "",
+      "stderr_tail": "",
+      "error": "skipped (disabled)"
+    },
+    {
+      "name": "silver",
+      "description": "PySpark clean -> data/silver/sp500_clean.parquet",
+      "cmd": [
+        "python",
+        "scripts/run_silver.py"
+      ],
+      "enabled": false,
+      "started_at": null,
+      "ended_at": null,
+      "duration_sec": null,
+      "exit_code": null,
+      "success": true,
+      "stdout_tail": "",
+      "stderr_tail": "",
+      "error": "skipped (disabled)"
+    },
+    {
+      "name": "dbt",
+      "description": "dbt build (run + test) via scripts/dbt.ps1",
+      "cmd": [
+        "powershell.exe",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/dbt.ps1",
+        "build",
+        "--profiles-dir",
+        "."
+      ],
+      "enabled": false,
+      "started_at": null,
+      "ended_at": null,
+      "duration_sec": null,
+      "exit_code": null,
+      "success": true,
+      "stdout_tail": "",
+      "stderr_tail": "",
+      "error": "skipped (disabled)"
+    }
+  ]
+}

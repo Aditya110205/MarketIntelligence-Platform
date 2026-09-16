@@ -1,0 +1,88 @@
+version: 2
+
+models:
+  - name: fct_daily_prices
+    description: >
+      Daily price fact. One row per (ticker, trade_date).
+      Pass-through from int_sp500__prices_enriched; ADR-001 (ffill close_price)
+      is applied upstream. Rows preserved from Silver: 947.
+    columns:
+      - name: trade_date
+        description: "Trading date (date type, UTC-naive)."
+        tests:
+          - not_null
+
+      - name: ticker
+        description: "Canonical ticker (10 values, normalized in Phase 4)."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['AAPL', 'AMZN', 'FB', 'GOOGL', 'JNJ',
+                       'JPM', 'MSFT', 'NVDA', 'PG', 'V']
+
+      - name: close_price_filled
+        description: >
+          close_price after ADR-001 ffill. Non-null for every row except
+          the first observation per ticker (no prior value to carry forward).
+          Use this column for all downstream computation.
+        tests:
+          - not_null
+
+      - name: close_price_was_filled
+        description: >
+          True when close_price was NULL in the source and close_price_filled
+          was synthesized by ffill. Phase 5 measured 9 such rows.
+        tests:
+          - not_null
+
+      - name: volume
+        description: "Daily traded volume. May be NULL — not used in Phase 5 metrics."
+
+  - name: fct_daily_metrics
+    description: >
+      Daily rolling metrics fact. One row per (ticker, trade_date).
+      Grain-preserving join target for fct_daily_prices. Reads from
+      int_sp500__prices_enriched (not from fct_daily_prices) so ADR-001 is
+      inherited, not re-applied. Row count preserved: 947.
+    columns:
+      - name: trade_date
+        description: "Trading date."
+        tests:
+          - not_null
+
+      - name: ticker
+        description: "Canonical ticker."
+        tests:
+          - not_null
+
+      - name: close_price_filled
+        description: "Same column as fct_daily_prices.close_price_filled; kept for join convenience."
+        tests:
+          - not_null
+
+      - name: ma7
+        description: >
+          7-observation rolling mean of close_price_filled.
+          Non-null from row 1 of each ticker (AVG over truncated frame is defined).
+        tests:
+          - not_null
+
+      - name: ma30
+        description: "30-observation rolling mean of close_price_filled."
+        tests:
+          - not_null
+
+      - name: volatility_30d
+        description: >
+          Annualized 30-observation rolling stddev of daily log returns (sqrt(252) scaling).
+          NULL on the first 2 rows per ticker (sample stddev needs >= 2 points) and on
+          rows where the rolling window contains < 2 valid returns (KI-003 cascades).
+          Phase 5 measured exactly 20 NULLs.
+        # No not_null test here — NULLs are expected by design.
+        # See tests/fct_daily_metrics_volatility_null_count.sql for the pinned count.
+
+      - name: drawdown
+        description: >
+          close_price_filled / running peak - 1. Always <= 0; equals 0 at new highs.
+        tests:
+          - not_null

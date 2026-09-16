@@ -46,3 +46,11 @@ Thumbs.db
 
 # Locust perf artifacts (regenerated per run)
 data/perf/*.csv
+
+venv/
+.streamlit/secrets.toml
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+*.log

@@ -43,3 +43,6 @@ Thumbs.db
 
 # Docker
 .docker/
+
+# Locust perf artifacts (regenerated per run)
+data/perf/*.csv

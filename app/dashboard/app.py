@@ -5,6 +5,10 @@ Single-page, top-to-bottom scroll. Consumes only app.dashboard.api_client
 and app.dashboard.charts. Handles API-down / ticker-no-data / slow-API
 degraded states without ever surfacing a Python traceback.
 
+Phase 9 Step 5 addition:
+    Sidebar "Ask" panel calling POST /ask, plus a main-area history block.
+    Additive only — no Phase 8 code was restructured.
+
 Run from repo root:
     streamlit run app/dashboard/app.py
 """
@@ -26,6 +30,7 @@ if str(_REPO_ROOT) not in sys.path:
 import datetime as dt
 
 import pandas as pd
+import requests
 import streamlit as st
 
 from app.dashboard.api_client import APIError, get_health, get_metrics, get_ticker
@@ -46,6 +51,7 @@ st.set_page_config(
 )
 
 API_DOCS_URL = "http://127.0.0.1:8000/docs"
+API_BASE = "http://127.0.0.1:8000"
 DEFAULT_TICKERS = ["AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "JPM", "JNJ", "PG", "FB", "V"]
 
 
@@ -154,6 +160,26 @@ def _inject_css() -> None:
 
           /* Tighten Streamlit's default block spacing */
           .block-container {{ padding-top: 1.5rem; padding-bottom: 2rem; }}
+
+          /* Ask panel — sidebar card styling */
+          .mi-ask-explanation {{
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-left: 3px solid {COLORS['accent']};
+            border-radius: 8px;
+            padding: .8rem .9rem;
+            margin: .4rem 0 .6rem 0;
+            color: {COLORS['text']};
+            font-size: .88rem;
+            line-height: 1.45;
+          }}
+          .mi-ask-q {{
+            color: {COLORS['muted']};
+            font-size: .75rem;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-bottom: .25rem;
+          }}
         </style>
         """,
         unsafe_allow_html=True,
@@ -559,6 +585,95 @@ def _render_footer() -> None:
     )
 
 
+# ---- Phase 9 Step 5: Ask panel (sidebar) ----------------------------------
+# Additive only — the Phase 8 dashboard flow above is unchanged. This block
+# renders in the sidebar so it never shifts or restructures the main layout.
+
+def _render_ask_sidebar() -> None:
+    with st.sidebar:
+        st.markdown("### Ask the data")
+        st.caption(
+            "Natural-language questions are translated to SQL, validated, and run "
+            "against the two dbt marts. The model explains the result in plain English."
+        )
+
+        if "ask_history" not in st.session_state:
+            st.session_state.ask_history = []
+
+        with st.form("ask_form", clear_on_submit=False):
+            q = st.text_input(
+                "Your question",
+                placeholder="Top 5 gainers on 2015-09-27?",
+                key="ask_input",
+            )
+            submitted = st.form_submit_button("Ask")
+
+        if submitted and q.strip():
+            with st.spinner("Thinking..."):
+                try:
+                    r = requests.post(
+                        f"{API_BASE}/ask",
+                        json={"question": q.strip()},
+                        timeout=180,
+                    )
+                except requests.RequestException as e:
+                    st.error(f"Request failed: {e}")
+                else:
+                    if r.status_code == 200:
+                        st.session_state.ask_history.insert(0, r.json())
+                    else:
+                        try:
+                            detail = r.json().get("detail", r.text)
+                        except Exception:
+                            detail = r.text
+                        st.error(f"HTTP {r.status_code}: {detail}")
+
+        # Latest answer preview in the sidebar (compact).
+        if st.session_state.ask_history:
+            latest = st.session_state.ask_history[0]
+            st.markdown(
+                f"<div class='mi-ask-q'>Latest question</div>"
+                f"<div style='color:{COLORS['text']}; font-size:.88rem; "
+                f"margin-bottom:.4rem;'>{latest['question']}</div>"
+                f"<div class='mi-ask-explanation'>{latest['explanation']}</div>",
+                unsafe_allow_html=True,
+            )
+
+
+def _render_ask_history() -> None:
+    """Full Ask history in the main area, below the dashboard. Renders
+    nothing until at least one question has been asked."""
+    history = st.session_state.get("ask_history") or []
+    if not history:
+        return
+
+    st.divider()
+    st.subheader("Ask history")
+
+    for item in history:
+        st.markdown(f"**Q:** {item['question']}")
+        st.markdown(item["explanation"])
+
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Rows", item["row_count"])
+        c2.metric(
+            "Total latency",
+            f"{item['latency_ms']['total_ms']:.0f} ms",
+        )
+        c3.metric(
+            "SQL gen",
+            f"{item['latency_ms']['sql_gen_ms']:.0f} ms",
+        )
+
+        if item["rows"]:
+            st.dataframe(item["rows"], use_container_width=True)
+
+        with st.expander("Generated SQL"):
+            st.code(item["sql"], language="sql")
+
+        st.divider()
+
+
 # ---- main -----------------------------------------------------------------
 
 def main() -> None:
@@ -598,6 +713,12 @@ def main() -> None:
 
     _render_ticker_panel(symbol)
     _render_risk_panel(symbol)
+
+    # Phase 9 Step 5: Ask panel. Sidebar renders immediately; the main-area
+    # history block renders nothing until the first question is asked.
+    _render_ask_sidebar()
+    _render_ask_history()
+
     _render_footer()
 
 

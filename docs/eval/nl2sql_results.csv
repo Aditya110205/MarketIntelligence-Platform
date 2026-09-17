@@ -1,0 +1,180 @@
+id,question,expected_sql,generated_sql,status,error,tables_match,columns_match,aggregations_match,filters_match,match,latency_s
+1,What was AAPL's closing price on 2015-09-25?,SELECT close_price_filled FROM public_marts.fct_daily_metrics WHERE ticker = 'AAPL' AND trade_date = '2015-09-25',"SELECT
+  close_price_filled
+FROM public_marts.fct_daily_metrics
+WHERE
+  ticker = 'AAPL' AND
+  trade_date = '2015-09-25'
+LIMIT 1",ok,,True,True,True,True,True,16.36
+2,What was the highest close price for MSFT in 2014?,SELECT MAX(close_price_filled) FROM public_marts.fct_daily_metrics WHERE ticker = 'MSFT' AND trade_date BETWEEN '2014-01-01' AND '2014-12-31',"SELECT
+  MAX(fct_daily_prices.close_price_filled)
+FROM public_marts.fct_daily_prices
+WHERE
+  fct_daily_prices.ticker = 'MSFT' AND fct_daily_prices.trade_date BETWEEN '2014-01-01' AND '2014-12-31'
+LIMIT 100",ok,,True,True,True,True,True,9.25
+3,What was the lowest close price for NVDA in 2013?,SELECT MIN(close_price_filled) FROM public_marts.fct_daily_metrics WHERE ticker = 'NVDA' AND trade_date BETWEEN '2013-01-01' AND '2013-12-31',"SELECT
+  MIN(close_price_filled)
+FROM public_marts.fct_daily_metrics
+WHERE
+  ticker = 'NVDA' AND
+  trade_date BETWEEN '2013-01-01' AND '2013-12-31'
+LIMIT 100",ok,,True,True,True,True,True,8.31
+4,What is the average close price for AMZN in 2014?,SELECT AVG(close_price_filled) FROM public_marts.fct_daily_metrics WHERE ticker = 'AMZN' AND trade_date BETWEEN '2014-01-01' AND '2014-12-31',"SELECT
+  AVG(fct_daily_metrics.close_price_filled)
+FROM public_marts.fct_daily_metrics
+WHERE
+  ticker = 'AMZN' AND
+  trade_date BETWEEN '2014-01-01' AND '2014-12-31'",ok,,True,True,True,True,True,9.18
+5,What is the average 30-day volatility for AAPL in 2014?,SELECT AVG(volatility_30d) FROM public_marts.fct_daily_metrics WHERE ticker = 'AAPL' AND trade_date BETWEEN '2014-01-01' AND '2014-12-31',"SELECT
+  AVG(volatility_30d)
+FROM public_marts.fct_daily_metrics
+WHERE
+  ticker = 'AAPL'
+  AND trade_date BETWEEN '2014-01-01' AND '2014-12-31'",ok,,True,True,True,True,True,8.64
+6,What is the maximum drawdown for JPM in 2014?,SELECT MIN(drawdown) FROM public_marts.fct_daily_metrics WHERE ticker = 'JPM' AND trade_date BETWEEN '2014-01-01' AND '2014-12-31',"SELECT
+  MAX(drawdown)
+FROM public_marts.fct_daily_metrics
+WHERE
+  ticker = 'JPM' AND
+  trade_date BETWEEN '2014-01-01' AND '2014-12-31'",ok,,True,True,False,True,False,8.82
+7,What was the total volume traded for AAPL in 2015?,SELECT SUM(volume) FROM public_marts.fct_daily_prices WHERE ticker = 'AAPL' AND trade_date BETWEEN '2015-01-01' AND '2015-12-31',"SELECT
+  SUM(volume)
+FROM public_marts.fct_daily_prices
+WHERE
+  ticker = 'AAPL' AND
+  trade_date BETWEEN '2015-01-01' AND '2015-12-31'
+LIMIT 100",ok,,True,True,True,True,True,8.13
+8,What was the average daily volume for MSFT in 2014?,SELECT AVG(volume) FROM public_marts.fct_daily_prices WHERE ticker = 'MSFT' AND trade_date BETWEEN '2014-01-01' AND '2014-12-31',"SELECT
+  AVG(volume)
+FROM
+  public_marts.fct_daily_prices
+WHERE
+  ticker = 'MSFT'
+  AND trade_date BETWEEN '2014-01-01' AND '2014-12-31'",ok,,True,True,True,True,True,8.64
+9,How many trading days of data exist for GOOGL?,SELECT COUNT(DISTINCT trade_date) FROM public_marts.fct_daily_metrics WHERE ticker = 'GOOGL',"SELECT
+  count(distinct ticker)
+FROM public_marts.fct_daily_metrics
+WHERE
+  ticker = 'GOOGL'",ok,,True,False,True,True,False,8.02
+10,How many tickers are tracked in the dataset?,SELECT COUNT(DISTINCT ticker) FROM public_marts.fct_daily_metrics,"SELECT
+  count(distinct ticker)
+FROM public_marts.fct_daily_metrics",ok,,True,True,True,True,True,7.36
+11,What was the maximum high price for AAPL in 2014?,SELECT MAX(high_price) FROM public_marts.fct_daily_prices WHERE ticker = 'AAPL' AND trade_date BETWEEN '2014-01-01' AND '2014-12-31',"SELECT
+  MAX(public_marts.fct_daily_prices.high_price)
+FROM public_marts.fct_daily_prices
+WHERE
+  ticker = 'AAPL' AND
+  trade_date BETWEEN '2014-01-01' AND '2014-12-31'
+LIMIT 100",ok,,True,True,True,True,True,8.46
+12,What was the minimum low price for MSFT in 2013?,SELECT MIN(low_price) FROM public_marts.fct_daily_prices WHERE ticker = 'MSFT' AND trade_date BETWEEN '2013-01-01' AND '2013-12-31',"SELECT
+  MIN(low_price)
+FROM public_marts.fct_daily_prices
+WHERE
+  ticker = 'MSFT' AND
+  trade_date BETWEEN '2013-01-02' AND '2013-12-31'
+LIMIT 100",ok,,True,True,True,True,True,8.57
+13,What was NVDA's opening price on 2015-09-25?,SELECT open_price FROM public_marts.fct_daily_prices WHERE ticker = 'NVDA' AND trade_date = '2015-09-25',"SELECT
+  open_price
+FROM public_marts.fct_daily_prices
+WHERE
+  ticker = 'NVDA' AND
+  trade_date = '2015-09-25'
+LIMIT 1",ok,,True,True,True,True,True,8.12
+14,What is the average 7-day moving average for AAPL in 2014?,SELECT AVG(ma7) FROM public_marts.fct_daily_metrics WHERE ticker = 'AAPL' AND trade_date BETWEEN '2014-01-01' AND '2014-12-31',"SELECT
+  AVG(ma7)
+FROM public_marts.fct_daily_metrics
+WHERE
+  ticker = 'AAPL'
+  AND trade_date BETWEEN '2014-01-01' AND '2014-12-31'",ok,,True,True,True,True,True,8.66
+15,What is the average 30-day moving average for MSFT in 2014?,SELECT AVG(ma30) FROM public_marts.fct_daily_metrics WHERE ticker = 'MSFT' AND trade_date BETWEEN '2014-01-01' AND '2014-12-31',,http_422,"{'error': 'sql_execution_failed', 'message': '(psycopg.errors.GroupingError) column ""fct_daily_metrics.trade_date"" must appear in the GROUP BY clause or be used in an aggregate function\nLINE 8:   trade_date\n          ^\n[SQL: SELECT\n  AVG(ma30)\nFROM public_marts.fct_daily_metrics\nWHERE\n  ticke",,,,,False,
+16,Show me AAPL's close price for the last 10 days,SELECT close_price_filled FROM public_marts.fct_daily_metrics WHERE ticker = 'AAPL' ORDER BY trade_date DESC LIMIT 10,"SELECT
+  fct_daily_prices.close_price_filled
+FROM public_marts.fct_daily_prices
+WHERE
+  fct_daily_prices.ticker = 'AAPL'
+ORDER BY
+  fct_daily_prices.trade_date DESC
+LIMIT 10",ok,,True,True,True,True,True,8.71
+17,Show me MSFT's volatility in December 2014,SELECT volatility_30d FROM public_marts.fct_daily_metrics WHERE ticker = 'MSFT' AND trade_date BETWEEN '2014-12-01' AND '2014-12-31',"SELECT
+  COALESCE(public_marts.fct_daily_metrics.volatility_30d, NULL)
+FROM public_marts.fct_daily_metrics
+WHERE
+  ticker = 'MSFT'
+  AND trade_date BETWEEN '2014-12-01' AND '2014-12-31'
+LIMIT 100",ok,,True,True,True,True,True,8.88
+18,Show me JNJ's drawdown in 2015,SELECT drawdown FROM public_marts.fct_daily_metrics WHERE ticker = 'JNJ' AND trade_date BETWEEN '2015-01-01' AND '2015-12-31',"SELECT
+  COALESCE(public_marts.fct_daily_metrics.drawdown, 0.0)
+FROM public_marts.fct_daily_metrics
+WHERE
+  ticker = 'JNJ'
+  AND trade_date BETWEEN '2015-01-01' AND '2015-09-27'
+LIMIT 100",ok,,True,True,True,True,True,9.58
+19,Show me PG's volume in 2014,SELECT volume FROM public_marts.fct_daily_prices WHERE ticker = 'PG' AND trade_date BETWEEN '2014-01-01' AND '2014-12-31',"SELECT
+  volume
+FROM public_marts.fct_daily_prices
+WHERE
+  EXTRACT(
+    YEAR
+    FROM trade_date
+  ) = 2014
+LIMIT 100",ok,,True,False,True,False,False,8.26
+20,Show me V's close price in September 2015,SELECT close_price_filled FROM public_marts.fct_daily_metrics WHERE ticker = 'V' AND trade_date BETWEEN '2015-09-01' AND '2015-09-30',"SELECT
+  fct_daily_prices.close_price_filled
+FROM public_marts.fct_daily_prices
+WHERE
+  fct_daily_prices.ticker = 'AAPL'
+  AND fct_daily_prices.trade_date BETWEEN '2015-09-01' AND '2015-09-30'
+LIMIT 100",ok,,True,True,True,True,True,9.07
+21,What was the average close price across all tickers in 2014?,SELECT AVG(close_price_filled) FROM public_marts.fct_daily_metrics WHERE trade_date BETWEEN '2014-01-01' AND '2014-12-31',"SELECT
+  AVG(public_marts.fct_daily_metrics.close_price_filled)
+FROM public_marts.fct_daily_metrics
+WHERE
+  trade_date BETWEEN '2014-01-01' AND '2014-12-31'",ok,,True,True,True,True,True,9.11
+22,What was the average volatility across all tickers in 2014?,SELECT AVG(volatility_30d) FROM public_marts.fct_daily_metrics WHERE trade_date BETWEEN '2014-01-01' AND '2014-12-31',"SELECT
+  AVG(volatility_30d)
+FROM public_marts.fct_daily_metrics
+WHERE
+  trade_date BETWEEN '2014-01-01' AND '2014-12-31'",ok,,True,True,True,True,True,7.88
+23,How many rows are in the daily metrics table?,SELECT COUNT(*) FROM public_marts.fct_daily_metrics,"SELECT
+  count(*)
+FROM public_marts.fct_daily_metrics",ok,,True,True,True,True,True,7.96
+24,What is the latest trade date in the dataset?,SELECT MAX(trade_date) FROM public_marts.fct_daily_metrics,"SELECT
+  max(trade_date)
+FROM public_marts.fct_daily_metrics",ok,,True,True,True,True,True,6.98
+25,What is the earliest trade date in the dataset?,SELECT MIN(trade_date) FROM public_marts.fct_daily_metrics,"SELECT
+  MIN(trade_date)
+FROM public_marts.fct_daily_metrics",ok,,True,True,True,True,True,7.01
+26,What was FB's highest close price in 2014?,SELECT MAX(close_price_filled) FROM public_marts.fct_daily_metrics WHERE ticker = 'FB' AND trade_date BETWEEN '2014-01-01' AND '2014-12-31',"SELECT
+  max(close_price_filled)
+FROM public_marts.fct_daily_metrics
+WHERE
+  ticker = 'FB' AND
+  trade_date BETWEEN '2014-01-01' AND '2014-12-31'
+LIMIT 100",ok,,True,True,True,True,True,7.59
+27,What was the average high price for AAPL in 2013?,SELECT AVG(high_price) FROM public_marts.fct_daily_prices WHERE ticker = 'AAPL' AND trade_date BETWEEN '2013-01-01' AND '2013-12-31',"SELECT
+  AVG(fct_daily_prices.high_price)
+FROM public_marts.fct_daily_prices
+WHERE
+  ticker = 'AAPL' AND
+  trade_date BETWEEN '2013-01-01' AND '2013-12-31'
+LIMIT 100",ok,,True,True,True,True,True,7.68
+28,Show me GOOGL's close price in 2015,SELECT close_price_filled FROM public_marts.fct_daily_metrics WHERE ticker = 'GOOGL' AND trade_date BETWEEN '2015-01-01' AND '2015-12-31',"SELECT
+  fct_daily_prices.close_price
+FROM public_marts.fct_daily_prices
+WHERE
+  fct_daily_prices.ticker = 'GOOGL'
+  AND fct_daily_prices.trade_date BETWEEN '2015-01-01' AND '2015-09-27'
+LIMIT 100",ok,,False,False,True,True,False,7.94
+29,What is the average volume for all tickers in 2014?,SELECT AVG(volume) FROM public_marts.fct_daily_prices WHERE trade_date BETWEEN '2014-01-01' AND '2014-12-31',"SELECT
+  AVG(volume)
+FROM public_marts.fct_daily_prices
+WHERE
+  EXTRACT(
+    YEAR FROM trade_date
+  ) = 2014",ok,,True,True,True,True,True,7.4
+30,What was the highest 30-day volatility for NVDA in 2014?,SELECT MAX(volatility_30d) FROM public_marts.fct_daily_metrics WHERE ticker = 'NVDA' AND trade_date BETWEEN '2014-01-01' AND '2014-12-31',"SELECT
+  MAX(volatility_30d)
+FROM public_marts.fct_daily_metrics
+WHERE
+  ticker = 'NVDA' AND
+  trade_date BETWEEN '2014-01-01' AND '2014-12-31'",ok,,True,True,True,True,True,7.54

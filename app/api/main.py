@@ -8,6 +8,10 @@ Phase 7 scope:
     /metrics         - aggregate metrics across all tickers
     /ticker/{symbol} - per-ticker time series over a date range
 
+Phase 9 Step 5 addition:
+    /ask             - natural-language question -> SQL -> rows -> explanation
+                       (registered via app.api.ask router)
+
 Run locally:
     uvicorn app.api.main:app --reload --host 127.0.0.1 --port 8000
 
@@ -27,6 +31,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import text
 
 from app.database.session import get_engine
+from app.api.ask import router as ask_router
 
 logger = logging.getLogger("market_intel.api")
 logging.basicConfig(
@@ -97,9 +102,13 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Market Intelligence API",
     description="Analytics API over the S&P 500 warehouse (Bronze -> Silver -> dbt marts).",
-    version="0.3.0",
+    version="0.4.0",
     lifespan=lifespan,
 )
+
+# Phase 9 Step 5: register the /ask router. This must come AFTER `app` is
+# instantiated and BEFORE the first request is served.
+app.include_router(ask_router)
 
 
 # ---------------------------------------------------------------------------
